@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>AI Matching</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:'Inter',sans-serif;
+}
+
+:root{
+  --bg:#0c1120;
+  --card:#12192d;
+  --border:rgba(255,255,255,0.06);
+  --blue:#4facfe;
+  --cyan:#00f2fe;
+}
+
+body{
+  background:var(--bg);
+  color:white;
+}
+
+.layout{
+  display:grid;
+  grid-template-columns:260px 1fr;
+  min-height:100vh;
+}
+
+/* SIDEBAR */
+
+.sidebar{
+  position:sticky;
+  top:0;
+  height:100vh;
+  background:rgba(18,25,45,0.8);
+  backdrop-filter:blur(20px);
+  border-right:1px solid var(--border);
+  padding:28px 18px;
+}
+
+.logo{
+  height:80px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:2rem;
+  font-weight:800;
+  background:linear-gradient(90deg,var(--blue),var(--cyan));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  margin-bottom:25px;
+}
+
+.menu{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.menu-item{
+  padding:16px 18px;
+  border-radius:18px;
+  color:rgba(255,255,255,0.7);
+  transition:0.3s;
+  font-weight:600;
+  display:flex;
+  gap:12px;
+  align-items:center;
+  text-decoration:none;
+}
+
+.menu-item:hover{
+  background:rgba(255,255,255,0.06);
+  color:white;
+  transform:translateX(4px);
+}
+
+.menu-item.active{
+  background:linear-gradient(
+    90deg,
+    rgba(79,172,254,0.18),
+    rgba(0,242,254,0.08)
+  );
+  border:1px solid rgba(79,172,254,0.2);
+  color:white;
+}
+
+/* MAIN */
+
+.main{
+  padding:24px;
+}
+
+.page-shell{
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.06);
+  border-radius:36px;
+  padding:30px;
+  backdrop-filter:blur(18px);
+}
+
+.page-title{
+  font-size:3rem;
+  font-weight:800;
+  margin-bottom:10px;
+}
+
+.page-sub{
+  color:rgba(255,255,255,0.65);
+  margin-bottom:35px;
+  line-height:1.8;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:24px;
+}
+
+.card{
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.06);
+  border-radius:28px;
+  padding:28px;
+}
+
+.card h2{
+  margin-bottom:20px;
+}
+
+input,
+textarea,
+select{
+  width:100%;
+  margin-bottom:16px;
+  background:#1b243c;
+  border:none;
+  outline:none;
+  color:white;
+  padding:16px;
+  border-radius:16px;
+  font-size:15px;
+}
+
+textarea{
+  min-height:150px;
+  resize:none;
+}
+
+button{
+  width:100%;
+  height:52px;
+  border:none;
+  border-radius:16px;
+  background:linear-gradient(90deg,var(--blue),var(--cyan));
+  color:#07111f;
+  font-weight:800;
+  cursor:pointer;
+  transition:0.3s;
+}
+
+button:hover{
+  transform:translateY(-3px);
+}
+
+.result{
+  margin-top:20px;
+}
+
+.match-item{
+  background:#1b243c;
+  padding:18px;
+  border-radius:18px;
+  margin-bottom:15px;
+}
+
+.match-item h4{
+  margin-bottom:8px;
+}
+
+.match-item p{
+  color:rgba(255,255,255,0.7);
+  line-height:1.7;
+}
+
+@media(max-width:1100px){
+
+  .layout{
+    grid-template-columns:1fr;
+  }
+
+  .sidebar{
+    display:none;
+  }
+
+  .grid{
+    grid-template-columns:1fr;
+  }
+
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="layout">
+
+<!-- SIDEBAR -->
+
+<aside class="sidebar">
+
+<div class="logo">⌘</div>
+
+<div class="menu">
+
+<a href="index.html" class="menu-item">▦ Dashboard</a>
+      <a href="programdatabase.html" class="menu-item">☰ Program Database</a>
+      <a href="calendar.html" class="menu-item" >🗓 Calendar</a>
+      <a href="ganttproject.html" class="menu-item">⌁ Gantt Project</a>
+      <a href="aimatching.html" class="menu-item active">✦ AI Matching</a>
+      <a href="studentlist.html" class="menu-item">👥 Students</a>
+      <a href="reports.html" class="menu-item">📊 Reports</a>
+      <a href="settings.html" class="menu-item">⚙ Settings</a>
+</div>
+
+</aside>
+
+<!-- MAIN -->
+
+<main class="main">
+
+<div class="page-shell">
+
+<div class="page-title">
+AI Matching Engine
+</div>
+
+<div class="page-sub">
+AI tự động matching chương trình, tạo lộ trình ngoại khóa và generate resume học sinh.
+</div>
+
+<div class="grid">
+
+<!-- MATCHING -->
+
+<div class="card">
+
+<h2>AI Program Matching</h2>
+
+<textarea id="studentProfile" placeholder="Ví dụ:
+- Học sinh lớp 10
+- Quan tâm STEM & Robotics
+- Leadership tốt
+- Muốn apply US University"></textarea>
+
+<button onclick="runMatching()">
+AI Recommend
+</button>
+
+<div class="result" id="matchResult"></div>
+
+</div>
+
+<!-- ROADMAP -->
+
+<div class="card">
+
+<h2>Create Extracurricular Roadmap</h2>
+
+<input type="text" placeholder="Tên học sinh">
+
+<select>
+<option>STEM</option>
+<option>Business</option>
+<option>Medical</option>
+<option>Social Science</option>
+</select>
+
+<select>
+<option>Lớp 8</option>
+<option>Lớp 9</option>
+<option>Lớp 10</option>
+<option>Lớp 11</option>
+</select>
+
+<textarea placeholder="Mục tiêu du học / hoạt động"></textarea>
+
+<button onclick="generateRoadmap()">
+Generate Roadmap
+</button>
+
+<div class="result" id="roadmapResult"></div>
+
+</div>
+
+<!-- RESUME -->
+
+<div class="card">
+
+<h2>Student Resume Generator</h2>
+
+<div class="card">
+
+  <h2>AI Resume Generator</h2>
+
+  <input 
+    type="text" 
+    id="studentName" 
+    placeholder="Tên học sinh"
+  >
+
+  <input 
+    type="text" 
+    id="studentSchool" 
+    placeholder="School / Grade"
+  >
+
+  <input 
+    type="text" 
+    id="studentMajor" 
+    placeholder="Major Interest / Dream School"
+  >
+
+  <textarea 
+    id="activitySources"
+    placeholder="Paste sources:
+• Google Drive
+• Notion
+• LinkedIn
+• Portfolio
+• Certificates
+• Competition links
+• Github
+• Canva"
+  ></textarea>
+
+  <button onclick="generateResume()">
+    Generate AI Resume
+  </button>
+
+  <div class="result" id="resumeResult"></div>
+
+</div>
+
+<style>
+
+.resume-box{
+  margin-top:18px;
+  background:#1b243c;
+  border-radius:22px;
+  padding:24px;
+  border:1px solid rgba(255,255,255,0.06);
+}
+
+.resume-header{
+  margin-bottom:20px;
+}
+
+.resume-header h3{
+  font-size:1.4rem;
+  margin-bottom:8px;
+}
+
+.resume-header p{
+  color:rgba(255,255,255,0.7);
+}
+
+.resume-section{
+  margin-bottom:22px;
+}
+
+.resume-section h4{
+  margin-bottom:10px;
+  color:#4facfe;
+}
+
+.resume-section p{
+  color:rgba(255,255,255,0.78);
+  line-height:1.8;
+}
+
+.source-link{
+  display:block;
+  margin-bottom:10px;
+  color:#7dd3fc;
+  text-decoration:none;
+  word-break:break-all;
+}
+
+.source-link:hover{
+  text-decoration:underline;
+}
+
+.resume-badge{
+  display:inline-flex;
+  padding:8px 14px;
+  border-radius:999px;
+  background:rgba(79,172,254,0.15);
+  color:#8ed8ff;
+  margin:6px 6px 0 0;
+  font-size:0.82rem;
+  font-weight:600;
+}
+
+</style>
+
+<script>
+
+function generateResume(){
+
+  const name = document.getElementById("studentName").value;
+
+  const school = document.getElementById("studentSchool").value;
+
+  const major = document.getElementById("studentMajor").value;
+
+  const sources = document
+    .getElementById("activitySources")
+    .value
+    .split("\n")
+    .filter(link => link.trim() !== "");
+
+  let sourceHTML = "";
+
+  sources.forEach(link => {
+
+    sourceHTML += `
+      <a 
+        href="${link}" 
+        target="_blank"
+        class="source-link">
+        ${link}
+      </a>
+    `;
+
+  });
+
+  document.getElementById("resumeResult").innerHTML = `
+
+    <div class="resume-box">
+
+      <div class="resume-header">
+
+        <h3>
+          ${name} — Student Resume
+        </h3>
+
+        <p>
+          ${school}
+        </p>
+
+      </div>
+
+      <div class="resume-section">
+
+        <h4>
+          Academic Interest
+        </h4>
+
+        <p>
+          ${major}
+        </p>
+
+      </div>
+
+      <div class="resume-section">
+
+        <h4>
+          AI Summary
+        </h4>
+
+        <p>
+
+        Student demonstrates strong international exposure,
+        leadership potential, extracurricular engagement,
+        and interdisciplinary learning ability suitable for:
+
+        <br><br>
+
+        • International Summer Programs<br>
+        • Research Opportunities<br>
+        • STEM / Business Competitions<br>
+        • Global Leadership Programs<br>
+        • Overseas University Applications
+
+        </p>
+
+      </div>
+
+      <div class="resume-section">
+
+        <h4>
+          Suggested Strength Tags
+        </h4>
+
+        <span class="resume-badge">
+          Leadership
+        </span>
+
+        <span class="resume-badge">
+          Research
+        </span>
+
+        <span class="resume-badge">
+          International Exposure
+        </span>
+
+        <span class="resume-badge">
+          Project-based Learning
+        </span>
+
+      </div>
+
+      <div class="resume-section">
+
+        <h4>
+          Sources & Activities
+        </h4>
+
+        ${sourceHTML}
+
+      </div>
+
+    </div>
+
+  `;
+
+}
+
+</script>
+
+</div>
+
+<!-- DATABASE -->
+
+<div class="card">
+
+<h2>Current Database Projects</h2>
+
+<div class="match-item">
+<h4>Cosmos Summer Camp</h4>
+<p>Medical Summer Camp tại Singapore.</p>
+</div>
+
+<div class="match-item">
+<h4>Enjoy AI Competition</h4>
+<p>AI & Robotics Competition.</p>
+</div>
+
+<div class="match-item">
+<h4>5Bit Internship</h4>
+<p>Technology Internship Program.</p>
+</div>
+
+<div class="match-item">
+<h4>Ngoại khóa Hải Phòng</h4>
+<p>Field Trip & Industry Exposure.</p>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</main>
+
+</div>
+
+<script>
+
+function runMatching(){
+
+  document.getElementById("matchResult").innerHTML = `
+
+    <div class="match-item">
+      <h4>Enjoy AI Competition</h4>
+      <p>Phù hợp STEM, Robotics và AI.</p>
+    </div>
+
+    <div class="match-item">
+      <h4>5Bit Internship</h4>
+      <p>Phù hợp Computer Science & Technology.</p>
+    </div>
+
+  `;
+
+}
+
+function generateRoadmap(){
+
+  document.getElementById("roadmapResult").innerHTML = `
+
+    <div class="match-item">
+      <h4>Roadmap Generated</h4>
+
+      <p>
+      Q1: Volunteer Project<br><br>
+      Q2: Research Program<br><br>
+      Q3: International Competition<br><br>
+      Q4: Leadership Project
+      </p>
+    </div>
+
+  `;
+
+}
+
+function generateResume(){
+
+  document.getElementById("resumeResult").innerHTML = `
+
+    <div class="match-item">
+      <h4>Generated Resume</h4>
+
+      <p>
+      Leadership • STEM • Research • Community Service
+      </p>
+    </div>
+
+  `;
+
+}
+
+</script>
+
+</body>
+</html>

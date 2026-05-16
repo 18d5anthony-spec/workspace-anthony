@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AmericanStudy Fusion Dashboard</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+      font-family:'Inter',sans-serif;
+    }
+
+    :root{
+      --bg:#0c1120;
+      --card:#12192d;
+      --card-2:#171f35;
+      --border:rgba(255,255,255,0.06);
+      --text:#ffffff;
+      --muted:rgba(255,255,255,0.65);
+      --blue:#4facfe;
+      --cyan:#00f2fe;
+      --purple:#8b5cf6;
+      --green:#34d399;
+      --yellow:#fbbf24;
+      --red:#fb7185;
+    }
+
+    body{
+      background:var(--bg);
+      color:var(--text);
+      overflow-x:hidden;
+    }
+
+    body::before{
+      content:"";
+      position:fixed;
+      width:500px;
+      height:500px;
+      background:rgba(0,153,255,0.15);
+      border-radius:50%;
+      filter:blur(120px);
+      top:-200px;
+      left:-150px;
+      z-index:-1;
+    }
+
+    body::after{
+      content:"";
+      position:fixed;
+      width:500px;
+      height:500px;
+      background:rgba(139,92,246,0.16);
+      border-radius:50%;
+      filter:blur(120px);
+      bottom:-250px;
+      right:-120px;
+      z-index:-1;
+    }
+
+    .layout{
+      display:grid;
+      grid-template-columns:260px 1fr;
+      min-height:100vh;
+    }
+
+    .sidebar{
+      position:sticky;
+      top:0;
+      height:100vh;
+      background:rgba(18,25,45,0.75);
+      backdrop-filter:blur(24px);
+      border-right:1px solid var(--border);
+      padding:28px 18px;
+    }
+
+    .logo{
+      height:80px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:2rem;
+      font-weight:800;
+      background:linear-gradient(90deg,var(--blue),var(--cyan));
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+      margin-bottom:25px;
+    }
+
+    .menu{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+
+    .menu-item{
+      padding:16px 18px;
+      border-radius:18px;
+      color:rgba(255,255,255,0.7);
+      transition:0.3s;
+      cursor:pointer;
+      font-weight:600;
+      display:flex;
+      gap:12px;
+      align-items:center;
+    }
+
+    .menu-item:hover{
+      background:rgba(255,255,255,0.06);
+      color:white;
+      transform:translateX(4px);
+    }
+
+    .menu-item.active{
+      background:linear-gradient(90deg,rgba(79,172,254,0.18),rgba(0,242,254,0.08));
+      border:1px solid rgba(79,172,254,0.2);
+      color:white;
+    }
+
+    .ai-box-side{
+      margin-top:30px;
+      padding:20px;
+      border-radius:24px;
+      background:rgba(255,255,255,0.04);
+      border:1px solid var(--border);
+    }
+
+    .ai-box-side h4{
+      margin-bottom:12px;
+      font-size:1rem;
+    }
+
+    .ai-box-side p{
+      color:var(--muted);
+      line-height:1.7;
+      font-size:0.9rem;
+      margin-bottom:16px;
+    }
+
+    .discover-btn{
+      width:100%;
+      height:44px;
+      border:none;
+      border-radius:14px;
+      background:linear-gradient(90deg,var(--blue),var(--cyan));
+      color:#07111f;
+      font-weight:700;
+      cursor:pointer;
+    }
+
+    .main{
+      padding:24px;
+    }
+
+    .dashboard-shell{
+      background:rgba(255,255,255,0.04);
+      border:1px solid rgba(255,255,255,0.06);
+      border-radius:36px;
+      backdrop-filter:blur(18px);
+      overflow:hidden;
+    }
+
+    .topbar{
+      height:90px;
+      border-bottom:1px solid rgba(255,255,255,0.05);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:0 28px;
+      gap:20px;
+    }
+
+    .search-box{
+      flex:1;
+      max-width:650px;
+    }
+
+    .search-box input{
+      width:100%;
+      height:52px;
+      border-radius:18px;
+      border:1px solid rgba(255,255,255,0.08);
+      background:rgba(255,255,255,0.05);
+      color:white;
+      padding:0 20px;
+      outline:none;
+      font-size:15px;
+    }
+
+    .search-box input::placeholder{
+      color:rgba(255,255,255,0.45);
+    }
+
+    .top-right{
+      display:flex;
+      align-items:center;
+      gap:18px;
+    }
+
+    .avatar{
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+
+    .avatar img{
+      width:48px;
+      height:48px;
+      border-radius:50%;
+      object-fit:cover;
+      border:2px solid rgba(255,255,255,0.15);
+    }
+
+    .content{
+      padding:30px;
+    }
+
+    .hero{
+      display:grid;
+      grid-template-columns:1.3fr 1fr;
+      gap:24px;
+      margin-bottom:28px;
+    }
+
+    .glass-card{
+      background:rgba(255,255,255,0.05);
+      border:1px solid rgba(255,255,255,0.08);
+      border-radius:30px;
+      padding:28px;
+      backdrop-filter:blur(18px);
+    }
+
+    .hero-title{
+      font-size:3rem;
+      line-height:1.15;
+      margin-bottom:18px;
+    }
+
+    .hero-text{
+      color:var(--muted);
+      line-height:1.9;
+      margin-bottom:24px;
+    }
+
+    .hero-buttons{
+      display:flex;
+      gap:14px;
+      flex-wrap:wrap;
+    }
+
+    .btn{
+      height:50px;
+      padding:0 24px;
+      border:none;
+      border-radius:16px;
+      cursor:pointer;
+      font-weight:700;
+      transition:0.3s;
+    }
+
+    .btn:hover{
+      transform:translateY(-3px);
+    }
+
+    .btn-primary{
+      background:linear-gradient(90deg,var(--blue),var(--cyan));
+      color:#07111f;
+    }
+
+    .btn-secondary{
+      background:rgba(255,255,255,0.08);
+      color:white;
+      border:1px solid rgba(255,255,255,0.08);
+    }
+
+    .stats-grid{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:16px;
+    }
+
+    .stat-card{
+      background:rgba(255,255,255,0.05);
+      border:1px solid rgba(255,255,255,0.08);
+      border-radius:24px;
+      padding:22px;
+    }
+
+    .stat-card h2{
+      font-size:2.3rem;
+      margin-bottom:10px;
+    }
+
+    .stat-card p{
+      color:var(--muted);
+    }
+
+    .section-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:22px;
+      margin-top:40px;
+      gap:20px;
+      flex-wrap:wrap;
+    }
+
+    .section-title{
+      font-size:1.8rem;
+      font-weight:800;
+    }
+
+    .section-actions{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+
+    .mini-btn{
+      height:44px;
+      padding:0 20px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,0.08);
+      background:rgba(255,255,255,0.05);
+      color:white;
+      cursor:pointer;
+      font-weight:600;
+    }
+
+    .project-board{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:18px;
+    }
+
+    .kanban-column{
+      background:rgba(255,255,255,0.04);
+      border:1px solid rgba(255,255,255,0.06);
+      border-radius:24px;
+      padding:18px;
+      min-height:380px;
+    }
+
+    .kanban-column h3{
+      margin-bottom:18px;
+      font-size:1rem;
+    }
+
+    .task{
+      background:rgba(255,255,255,0.05);
+      border:1px solid rgba(255,255,255,0.06);
+      padding:18px;
+      border-radius:20px;
+      margin-bottom:16px;
+      transition:0.3s;
+    }
+
+    .task:hover{
+      transform:translateY(-4px);
+      background:rgba(255,255,255,0.08);
+    }
+
+    .task h4{
+      margin-bottom:10px;
+    }
+
+    .task p{
+      color:var(--muted);
+      line-height:1.7;
+      font-size:0.92rem;
+      margin-bottom:14px;
+    }
+
+    .badge{
+      display:inline-flex;
+      padding:8px 14px;
+      border-radius:999px;
+      font-size:0.75rem;
+      font-weight:700;
+    }
+
+    .open-badge{background:rgba(168,85,247,0.16);color:#d8b4fe;}
+    .done-badge{background:rgba(52,211,153,0.16);color:#6ee7b7;}
+    .build-badge{background:rgba(251,191,36,0.16);color:#fde68a;}
+
+    .ai-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:22px;
+    }
+
+    .ai-card textarea{
+      width:100%;
+      height:160px;
+      border:none;
+      outline:none;
+      resize:none;
+      border-radius:18px;
+      background:rgba(255,255,255,0.06);
+      border:1px solid rgba(255,255,255,0.08);
+      color:white;
+      padding:18px;
+      margin-top:18px;
+      line-height:1.8;
+    }
+
+    .recommend-list{
+      margin-top:20px;
+      display:flex;
+      flex-direction:column;
+      gap:16px;
+    }
+
+    .recommend-item{
+      background:rgba(255,255,255,0.05);
+      border:1px solid rgba(255,255,255,0.06);
+      border-radius:20px;
+      padding:18px;
+    }
+
+    .recommend-item h4{
+      margin-bottom:10px;
+    }
+
+    .recommend-item p{
+      color:var(--muted);
+      line-height:1.7;
+      font-size:0.93rem;
+    }
+
+    .table-shell{
+      background:rgba(255,255,255,0.04);
+      border:1px solid rgba(255,255,255,0.06);
+      border-radius:28px;
+      overflow:auto;
+      backdrop-filter:blur(16px);
+    }
+
+    table{
+      width:100%;
+      min-width:1450px;
+      border-collapse:collapse;
+    }
+
+    thead{
+      background:rgba(255,255,255,0.04);
+    }
+
+    th{
+      padding:22px 18px;
+      text-align:left;
+      font-size:0.84rem;
+      color:#8ed8ff;
+      border-bottom:1px solid rgba(255,255,255,0.06);
+      position:sticky;
+      top:0;
+      backdrop-filter:blur(10px);
+    }
+
+    td{
+      padding:22px 18px;
+      color:rgba(255,255,255,0.88);
+      line-height:1.8;
+      border-bottom:1px solid rgba(255,255,255,0.04);
+      vertical-align:top;
+    }
+
+    tr:hover{
+      background:rgba(255,255,255,0.03);
+    }
+
+    .type-tag{
+      display:inline-flex;
+      padding:8px 14px;
+      border-radius:12px;
+      font-size:0.78rem;
+      font-weight:700;
+    }
+
+    .blue{background:rgba(59,130,246,0.16);color:#8ec5ff;}
+    .green{background:rgba(52,211,153,0.16);color:#8ff0c1;}
+    .orange{background:rgba(251,191,36,0.16);color:#ffd978;}
+    .purple{background:rgba(168,85,247,0.16);color:#dab3ff;}
+
+    .status-select{
+      border:none;
+      outline:none;
+      padding:11px 16px;
+      border-radius:999px;
+      font-weight:700;
+      min-width:170px;
+      appearance:none;
+      cursor:pointer;
+      font-size:0.82rem;
+    }
+
+    .status-open{
+      background:rgba(168,85,247,0.16);
+      color:#d8b4fe;
+    }
+
+    .status-plan{
+      background:rgba(59,130,246,0.16);
+      color:#8ec5ff;
+    }
+
+    .status-complete{
+      background:rgba(52,211,153,0.16);
+      color:#8ff0c1;
+    }
+
+    .status-build{
+      background:rgba(251,191,36,0.16);
+      color:#ffd978;
+    }
+
+    .status-cancel{
+      background:rgba(244,63,94,0.16);
+      color:#ff9cb0;
+    }
+
+    footer{
+      margin-top:50px;
+      text-align:center;
+      color:rgba(255,255,255,0.45);
+      padding-bottom:20px;
+    }
+
+    @media(max-width:1400px){
+      .project-board{
+        grid-template-columns:repeat(2,1fr);
+      }
+    }
+
+    @media(max-width:1100px){
+
+      .layout{
+        grid-template-columns:1fr;
+      }
+
+      .sidebar{
+        display:none;
+      }
+
+      .hero,
+      .ai-grid{
+        grid-template-columns:1fr;
+      }
+
+    }
+
+    @media(max-width:768px){
+
+      .hero-title{
+        font-size:2rem;
+      }
+
+      .project-board{
+        grid-template-columns:1fr;
+      }
+
+      .stats-grid{
+        grid-template-columns:1fr;
+      }
+
+      .topbar{
+        flex-direction:column;
+        height:auto;
+        padding:20px;
+      }
+
+      .search-box{
+        width:100%;
+      }
+
+      .content{
+        padding:18px;
+      }
+
+    }
+
+  </style>
+</head>
+<body>
+
+<div class="layout">
+
+  <aside class="sidebar">
+
+    <div class="logo">⌘</div>
+
+         <div class="menu">
+      <a href="dashboard.html" class="menu-item active">▦ Dashboard</a>
+      <a href="programdatabase.html" class="menu-item">☰ Program Database</a>
+      <a href="calendar.html" class="menu-item" >🗓 Calendar</a>
+      <a href="ganttproject.html" class="menu-item">⌁ Gantt Project</a>
+      <a href="aimatching.html" class="menu-item">✦ AI Matching</a>
+      <a href="studentlist.html" class="menu-item">👥 Students</a>
+      <a href="reports.html" class="menu-item">📊 Reports</a>
+      <a href="settings.html" class="menu-item">⚙ Settings</a>
+    </div>
+
+    <div class="ai-box-side">
+      <h4>AI Recommendation</h4>
+      <p>
+        AI tự động recommend chương trình phù hợp dựa trên profile học sinh.
+      </p>
+
+      <button class="discover-btn">Khám phá ngay</button>
+    </div>
+
+  </aside>
+
+  <main class="main">
+
+    <div class="dashboard-shell">
+
+      <div class="topbar">
+
+        <div class="search-box">
+          <input type="text" placeholder="Tìm kiếm chương trình, học sinh, mentor...">
+        </div>
+
+        <div class="top-right">
+          <div>🔔</div>
+
+          
+
+           <a href="login.html" class="login-btn">
+    Login
+</a>
+
+<style>
+.login-btn{
+    display:inline-block;
+    padding:12px 30px;
+    background:linear-gradient(90deg,#3b82f6,#22d3ee);
+    color:white;
+    text-decoration:none;
+    border-radius:15px;
+    font-size:20px;
+    font-weight:bold;
+    transition:0.3s;
+}
+
+.login-btn:hover{
+    transform:scale(1.05);
+}
+</style>
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="content">
+
+        <section class="hero">
+
+          <div class="glass-card">
+            <div class="hero-title">
+              AmericanStudy Program Intelligence System
+            </div>
+
+            <div class="hero-text">
+              Dashboard quản lý chương trình, học sinh, mentor, timeline, AI matching và project tracking dành cho internship, summer camp, ngoại khóa và cuộc thi quốc tế.
+            </div>
+
+            <div class="hero-buttons">
+              <button class="btn btn-primary">+ Tạo chương trình</button>
+              <button class="btn btn-secondary">Xuất Excel</button>
+            </div>
+          </div>
+
+          <div class="stats-grid">
+
+            <div class="stat-card">
+              <h2>28</h2>
+              <p>Tổng chương trình</p>
+            </div>
+
+            <div class="stat-card">
+              <h2>9</h2>
+              <p>Đang mở ghép</p>
+            </div>
+
+            <div class="stat-card">
+              <h2>4</h2>
+              <p>Đã hoàn thành</p>
+            </div>
+
+            <div class="stat-card">
+              <h2>12+</h2>
+              <p>Cán bộ hỗ trợ</p>
+            </div>
+
+          </div>
+
+        </section>
+
+        <div class="section-header">
+          <div class="section-title">Project Management Board</div>
+
+          <div class="section-actions">
+            <button class="mini-btn">Filter</button>
+            <button class="mini-btn">Timeline</button>
+          </div>
+        </div>
+
+        <section class="project-board">
+
+          <div class="kanban-column">
+            <h3>📌 Dự kiến</h3>
+
+            <div class="task">
+              <h4>Ngoại khóa Hải Phòng</h4>
+              <p>Tham quan VinFast, cảng Hải Phòng và hệ sinh thái Cát Bà.</p>
+              <span class="badge done-badge">Tháng 4</span>
+            </div>
+
+          </div>
+
+          <div class="kanban-column">
+            <h3>🚧 Đang xây dựng</h3>
+
+            <div class="task">
+              <h4>Enjoy AI Competition</h4>
+              <p>Robotics & AI dành cho học sinh THCS - THPT.</p>
+              <span class="badge build-badge">Deadline tháng 6</span>
+            </div>
+
+          </div>
+
+          <div class="kanban-column">
+            <h3>🚀 Mở ghép</h3>
+
+            <div class="task">
+              <h4>Cosmos Summer Camp</h4>
+              <p>Summer Camp ngành Y tại Singapore.</p>
+              <span class="badge open-badge">Medical</span>
+            </div>
+
+          </div>
+
+          <div class="kanban-column">
+            <h3>✅ Hoàn thành</h3>
+
+            <div class="task">
+              <h4>Một Sớm Cao Nguyên</h4>
+              <p>Bắc Hà - Lào Cai.</p>
+              <span class="badge done-badge">Completed</span>
+            </div>
+
+          </div>
+
+        </section>
+
+        <div class="section-header">
+          <div class="section-title">AI Recommendation Engine</div>
+        </div>
+
+        <section class="ai-grid">
+
+          <div class="glass-card ai-card">
+            <h3>Nhập Profile Học Sinh</h3>
+
+            <textarea placeholder="Ví dụ:
+- Học sinh lớp 11
+- Quan tâm STEM & Robotics
+- Leadership tốt
+- Thích hoạt động quốc tế"></textarea>
+
+            <button class="btn btn-primary" style="margin-top:18px;width:100%;">
+              AI Recommend Program
+            </button>
+          </div>
+
+          <div class="glass-card">
+            <h3>AI Suggested Programs</h3>
+
+            <div class="recommend-list">
+
+              <div class="recommend-item">
+                <h4>Enjoy AI Competition</h4>
+                <p>Phù hợp với học sinh định hướng STEM, Robotics, Automation và AI.</p>
+              </div>
+
+              <div class="recommend-item">
+                <h4>Cosmos Summer Camp</h4>
+                <p>Phù hợp với học sinh quan tâm Medical, Biology và International Exposure.</p>
+              </div>
+
+            </div>
+
+          </div>
+
+        </section>
+
+        <div class="section-header">
+          <div class="section-title">Program Database</div>
+
+          <div class="section-actions">
+            <button class="mini-btn">Bộ lọc</button>
+            <button class="mini-btn">Xuất Excel</button>
+            <button class="btn btn-primary">+ Thêm chương trình</button>
+          </div>
+        </div>
+
+        <div class="table-shell">
+
+          <table>
+
+            <thead>
+              <tr>
+                <th>STT</th>
+                <th>CHƯƠNG TRÌNH</th>
+                <th>LOẠI</th>
+                <th>MÔ TẢ</th>
+                <th>THỜI GIAN</th>
+                <th>DEADLINE</th>
+                <th>TIẾN ĐỘ</th>
+                <th>HỌC SINH</th>
+                <th>CÁN BỘ</th>
+                <th>GHI CHÚ</th>
+              </tr>
+            </thead>
+
+            <tbody>
+
+              <tr>
+                <td>2</td>
+                <td><strong>Thực tập 5Bit</strong></td>
+                <td><span class="type-tag blue">Thực tập</span></td>
+                <td>Internship Program</td>
+                <td>-</td>
+                <td>-</td>
+                <td>
+                  <select class="status-select status-open" onchange="changeStatus(this)">
+                    <option>Mở ghép</option>
+                    <option>Dự kiến</option>
+                    <option>Hoàn thành</option>
+                    <option>Đang xây dựng</option>
+                    <option>Huỷ</option>
+                  </select>
+                </td>
+                <td>-</td>
+                <td>Trần Duy Hưng</td>
+                <td>-</td>
+              </tr>
+
+              <tr>
+                <td>3</td>
+                <td><strong>Ngoại khóa Hải Phòng</strong></td>
+                <td><span class="type-tag green">Ngoại khóa vùng cao</span></td>
+                <td>Tham quan VinFast, tìm hiểu hệ sinh thái Cát Bà.</td>
+                <td>Tháng 4</td>
+                <td>1 tháng</td>
+                <td>
+                  <select class="status-select status-plan" onchange="changeStatus(this)">
+                    <option>Dự kiến</option>
+                    <option>Mở ghép</option>
+                    <option>Hoàn thành</option>
+                    <option>Đang xây dựng</option>
+                    <option>Huỷ</option>
+                  </select>
+                </td>
+                <td>CLB Transitech</td>
+                <td>-</td>
+                <td>-</td>
+              </tr>
+
+              <tr>
+                <td>14</td>
+                <td><strong>Enjoy AI</strong></td>
+                <td><span class="type-tag orange">Cuộc thi</span></td>
+                <td>Robotics & AI Competition.</td>
+                <td>11/2026</td>
+                <td>5 tháng</td>
+                <td>
+                  <select class="status-select status-build" onchange="changeStatus(this)">
+                    <option>Đang xây dựng</option>
+                    <option>Mở ghép</option>
+                    <option>Dự kiến</option>
+                    <option>Hoàn thành</option>
+                    <option>Huỷ</option>
+                  </select>
+                </td>
+                <td>-</td>
+                <td>Bùi Thành Vinh</td>
+                <td>STEM</td>
+              </tr>
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+        <footer>
+          AmericanStudy Intelligence System • Anthony and Partner use ONLY
+        </footer>
+
+      </div>
+
+    </div>
+
+  </main>
+
+</div>
+
+<script>
+
+function changeStatus(select){
+
+  select.classList.remove(
+    'status-open',
+    'status-plan',
+    'status-complete',
+    'status-build',
+    'status-cancel'
+  )
+
+  if(select.value === 'Mở ghép'){
+    select.classList.add('status-open')
+  }
+
+  else if(select.value === 'Dự kiến'){
+    select.classList.add('status-plan')
+  }
+
+  else if(select.value === 'Hoàn thành'){
+    select.classList.add('status-complete')
+  }
+
+  else if(select.value === 'Đang xây dựng'){
+    select.classList.add('status-build')
+  }
+
+  else{
+    select.classList.add('status-cancel')
+  }
+
+}
+
+</script>
+
+</body>
+</html>
+```

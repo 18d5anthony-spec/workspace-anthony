@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+<title>AmericanStudy Gantt Project</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:'Inter',sans-serif;
+}
+
+:root{
+  --bg:#0c1120;
+  --card:#12192d;
+  --card2:#171f35;
+  --border:rgba(255,255,255,0.07);
+  --text:#fff;
+  --muted:rgba(255,255,255,0.65);
+  --blue:#4facfe;
+  --cyan:#00f2fe;
+  --green:#34d399;
+  --yellow:#fbbf24;
+  --purple:#8b5cf6;
+  --red:#fb7185;
+}
+
+body{
+  background:var(--bg);
+  color:white;
+  overflow-x:hidden;
+}
+
+body::before{
+  content:"";
+  position:fixed;
+  width:500px;
+  height:500px;
+  background:rgba(79,172,254,0.12);
+  filter:blur(120px);
+  border-radius:50%;
+  top:-200px;
+  left:-150px;
+  z-index:-1;
+}
+
+body::after{
+  content:"";
+  position:fixed;
+  width:500px;
+  height:500px;
+  background:rgba(139,92,246,0.15);
+  filter:blur(120px);
+  border-radius:50%;
+  bottom:-200px;
+  right:-150px;
+  z-index:-1;
+}
+
+.layout{
+  display:grid;
+  grid-template-columns:260px 1fr;
+  min-height:100vh;
+}
+
+.sidebar{
+  background:rgba(18,25,45,0.72);
+  backdrop-filter:blur(20px);
+  border-right:1px solid var(--border);
+  padding:24px 18px;
+  position:sticky;
+  top:0;
+  height:100vh;
+}
+
+.logo{
+  height:80px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:2rem;
+  font-weight:800;
+  background:linear-gradient(90deg,var(--blue),var(--cyan));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  margin-bottom:30px;
+}
+
+.menu{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.menu-item{
+  padding:15px 18px;
+  border-radius:18px;
+  background:transparent;
+  cursor:pointer;
+  transition:0.3s;
+  font-weight:600;
+  color:rgba(255,255,255,0.72);
+}
+
+.menu-item:hover{
+  background:rgba(255,255,255,0.06);
+  color:white;
+  transform:translateX(4px);
+}
+
+.menu-item.active{
+  background:linear-gradient(90deg,rgba(79,172,254,0.18),rgba(0,242,254,0.08));
+  border:1px solid rgba(79,172,254,0.18);
+  color:white;
+}
+
+.main{
+  padding:24px;
+}
+
+.shell{
+  background:rgba(255,255,255,0.04);
+  border:1px solid var(--border);
+  border-radius:34px;
+  overflow:hidden;
+  backdrop-filter:blur(16px);
+}
+
+.topbar{
+  height:90px;
+  border-bottom:1px solid rgba(255,255,255,0.05);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:0 28px;
+  flex-wrap:wrap;
+  gap:16px;
+}
+
+.search{
+  flex:1;
+  max-width:600px;
+}
+
+.search input{
+  width:100%;
+  height:52px;
+  border:none;
+  outline:none;
+  border-radius:18px;
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.08);
+  color:white;
+  padding:0 18px;
+}
+
+.actions{
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+}
+
+.btn{
+  height:48px;
+  border:none;
+  padding:0 22px;
+  border-radius:15px;
+  font-weight:700;
+  cursor:pointer;
+  transition:0.3s;
+}
+
+.btn:hover{
+  transform:translateY(-3px);
+}
+
+.primary{
+  background:linear-gradient(90deg,var(--blue),var(--cyan));
+  color:#07111f;
+}
+
+.secondary{
+  background:rgba(255,255,255,0.05);
+  color:white;
+  border:1px solid rgba(255,255,255,0.08);
+}
+
+.content{
+  padding:28px;
+}
+
+.title{
+  font-size:2.2rem;
+  font-weight:800;
+  margin-bottom:12px;
+}
+
+.subtitle{
+  color:var(--muted);
+  line-height:1.8;
+  margin-bottom:30px;
+}
+
+.gantt-shell{
+  overflow:auto;
+  border-radius:28px;
+  border:1px solid rgba(255,255,255,0.06);
+}
+
+.gantt{
+  min-width:1600px;
+}
+
+.gantt-header{
+  display:grid;
+  grid-template-columns:350px repeat(12,1fr);
+  background:rgba(255,255,255,0.04);
+  position:sticky;
+  top:0;
+  z-index:10;
+}
+
+.gantt-header div{
+  padding:18px;
+  border-right:1px solid rgba(255,255,255,0.05);
+  font-weight:700;
+  font-size:0.9rem;
+}
+
+.task-row{
+  display:grid;
+  grid-template-columns:350px repeat(12,1fr);
+  min-height:72px;
+  border-top:1px solid rgba(255,255,255,0.05);
+}
+
+.task-info{
+  padding:16px 18px;
+  border-right:1px solid rgba(255,255,255,0.05);
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  gap:8px;
+}
+
+.task-name{
+  font-weight:700;
+}
+
+.task-desc{
+  color:var(--muted);
+  font-size:0.88rem;
+}
+
+.month{
+  border-right:1px solid rgba(255,255,255,0.05);
+  position:relative;
+}
+
+.bar{
+  position:absolute;
+  top:18px;
+  height:34px;
+  border-radius:999px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:0.75rem;
+  font-weight:700;
+  color:white;
+}
+
+.blue{
+  background:linear-gradient(90deg,#3b82f6,#06b6d4);
+}
+
+.green{
+  background:linear-gradient(90deg,#10b981,#34d399);
+}
+
+.purple{
+  background:linear-gradient(90deg,#8b5cf6,#a855f7);
+}
+
+.orange{
+  background:linear-gradient(90deg,#f59e0b,#fbbf24);
+}
+
+.stats{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:18px;
+  margin-bottom:28px;
+}
+
+.card{
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.06);
+  border-radius:24px;
+  padding:22px;
+}
+
+.card h2{
+  font-size:2rem;
+  margin-bottom:10px;
+}
+
+.card p{
+  color:var(--muted);
+}
+
+@media(max-width:1100px){
+
+  .layout{
+    grid-template-columns:1fr;
+  }
+
+  .sidebar{
+    display:none;
+  }
+
+  .stats{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+}
+
+@media(max-width:768px){
+
+  .stats{
+    grid-template-columns:1fr;
+  }
+
+  .topbar{
+    height:auto;
+    padding:20px;
+  }
+
+  .content{
+    padding:18px;
+  }
+
+  .title{
+    font-size:1.7rem;
+  }
+
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="layout">
+
+  <aside class="sidebar">
+
+    <div class="logo">⌘</div>
+
+     <div class="menu">
+      <a href="index.html" class="menu-item">▦ Dashboard</a>
+      <a href="programdatabase.html" class="menu-item">☰ Program Database</a>
+      <a href="calendar.html" class="menu-item" >🗓 Calendar</a>
+      <a href="ganttproject.html" class="menu-item active">⌁ Gantt Project</a>
+      <a href="aimatching.html" class="menu-item">✦ AI Matching</a>
+      <a href="studentlist.html" class="menu-item">👥 Students</a>
+      <a href="reports.html" class="menu-item">📊 Reports</a>
+      <a href="settings.html" class="menu-item">⚙ Settings</a>
+
+    </div>
+
+  </aside>
+
+  <main class="main">
+
+    <div class="shell">
+
+      <div class="topbar">
+
+        <div class="search">
+          <input type="text" placeholder="Search project, timeline, mentor..." />
+        </div>
+
+        <div class="actions">
+          <button class="btn secondary">Filter</button>
+          <button class="btn secondary">Export PDF</button>
+          <button class="btn primary">+ New Project</button>
+        </div>
+
+      </div>
+
+      <div class="content">
+
+        <div class="title">
+          Gantt Project Timeline
+        </div>
+
+        <div class="subtitle">
+          Project management style Microsoft Project dành cho quản lý internship, conference, competition, field trip và summer camp.
+        </div>
+
+        <div class="stats">
+
+          <div class="card">
+            <h2>28</h2>
+            <p>Total Projects</p>
+          </div>
+
+          <div class="card">
+            <h2>12</h2>
+            <p>Active Timeline</p>
+          </div>
+
+          <div class="card">
+            <h2>7</h2>
+            <p>Upcoming Deadline</p>
+          </div>
+
+          <div class="card">
+            <h2>91%</h2>
+            <p>Completion Rate</p>
+          </div>
+
+        </div>
+
+        <div class="gantt-shell">
+
+          <div class="gantt">
+
+            <div class="gantt-header">
+
+              <div>PROJECT</div>
+
+              <div>JAN</div>
+              <div>FEB</div>
+              <div>MAR</div>
+              <div>APR</div>
+              <div>MAY</div>
+              <div>JUN</div>
+              <div>JUL</div>
+              <div>AUG</div>
+              <div>SEP</div>
+              <div>OCT</div>
+              <div>NOV</div>
+              <div>DEC</div>
+
+            </div>
+
+            <!-- ROW -->
+
+            <div class="task-row">
+
+              <div class="task-info">
+                <div class="task-name">Cosmos Summer Camp</div>
+                <div class="task-desc">Singapore Medical Program</div>
+              </div>
+
+              <div class="month"></div>
+              <div class="month"></div>
+
+              <div class="month">
+                <div class="bar blue" style="left:10%; width:320%;">
+                  Planning
+                </div>
+              </div>
+
+              <div class="month"></div>
+              <div class="month"></div>
+              <div class="month"></div>
+
+              <div class="month">
+                <div class="bar green" style="left:10%; width:180%;">
+                  Summer Camp
+                </div>
+              </div>
+
+              <div class="month"></div>
+              <div class="month"></div>
+              <div class="month"></div>
+              <div class="month"></div>
+              <div class="month"></div>
+
+            </div>
+
+            <!-- ROW -->
+
+            <div class="task-row">
+
+              <div class="task-info">
+                <div class="task-name">Enjoy AI Competition</div>
+                <div class="task-desc">STEM Robotics & AI</div>
+              </div>
+
+              <div class="month"></div>
+
+              <div class="month">
+                <div class="bar purple" style="left:8%; width:450%;">
+                  Development
+                </div>
+              </div>
+
+              <div class="month"></div>
+              <div class="month"></div>
+              <div class="month"></div>
+              <div class="month"></div>
+
+              <div class="month">
+                <div class="bar orange" style="left:10%; width:240%;">
+                  Competition
+                </div>
+              </div>
+
+              <div class="month"></div>
+              <div class="month"></div>
+              <div class="month"></div>
+              <div class="month"></div>
+              <div class="month"></div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+</div>
+
+</body>
+</html>

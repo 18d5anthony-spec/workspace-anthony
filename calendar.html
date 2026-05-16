@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>AmericanStudy Calendar</title>
+
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/main.min.css" rel="stylesheet">
+
+<style>
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:'Inter',sans-serif;
+}
+
+body{
+  background:#0c1120;
+  color:white;
+}
+
+.layout{
+  display:grid;
+  grid-template-columns:260px 1fr;
+  min-height:100vh;
+}
+
+.sidebar{
+  background:#12192d;
+  padding:24px;
+  border-right:1px solid rgba(255,255,255,0.06);
+}
+
+.logo{
+  font-size:2rem;
+  font-weight:800;
+  margin-bottom:30px;
+  text-align:center;
+}
+
+.menu{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.menu-item{
+  padding:15px;
+  border-radius:16px;
+  color:white;
+  text-decoration:none;
+  transition:0.3s;
+}
+
+.menu-item:hover{
+  background:rgba(255,255,255,0.06);
+}
+
+.menu-item.active{
+  background:linear-gradient(90deg,#4facfe,#00f2fe);
+  color:#07111f;
+  font-weight:700;
+}
+
+.main{
+  padding:25px;
+}
+
+.top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:20px;
+  flex-wrap:wrap;
+  gap:15px;
+}
+
+.title{
+  font-size:2rem;
+  font-weight:800;
+}
+
+.add-box{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+.add-box input{
+  height:46px;
+  border:none;
+  outline:none;
+  border-radius:14px;
+  padding:0 15px;
+  background:#1b243c;
+  color:white;
+}
+
+.add-box button{
+  border:none;
+  padding:0 20px;
+  border-radius:14px;
+  background:linear-gradient(90deg,#4facfe,#00f2fe);
+  color:#07111f;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.calendar-shell{
+  background:#12192d;
+  border-radius:28px;
+  padding:25px;
+  border:1px solid rgba(255,255,255,0.06);
+}
+
+#calendar{
+  background:transparent;
+}
+
+.fc{
+  color:white;
+}
+
+.fc-toolbar-title{
+  color:white;
+}
+
+.fc-button{
+  background:#1b243c !important;
+  border:none !important;
+}
+
+.fc-event{
+  border:none;
+  border-radius:10px;
+  padding:4px;
+}
+
+.task-panel{
+  margin-top:25px;
+  background:#12192d;
+  border-radius:28px;
+  padding:25px;
+}
+
+.task-panel h2{
+  margin-bottom:20px;
+}
+
+.task{
+  background:#1b243c;
+  padding:18px;
+  border-radius:18px;
+  margin-bottom:15px;
+}
+
+.task h4{
+  margin-bottom:8px;
+}
+
+.task p{
+  color:rgba(255,255,255,0.7);
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="layout">
+
+<div class="sidebar">
+
+<div class="logo">⌘</div>
+
+<div class="menu">
+<a href="index.html" class="menu-item">▦ Dashboard</a>
+      <a href="programdatabase.html" class="menu-item">☰ Program Database</a>
+      <a href="calendar.html" class="menu-item active" >🗓 Calendar</a>
+      <a href="ganttproject.html" class="menu-item">⌁ Gantt Project</a>
+      <a href="aimatching.html" class="menu-item">✦ AI Matching</a>
+      <a href="studentlist.html" class="menu-item">👥 Students</a>
+      <a href="reports.html" class="menu-item">📊 Reports</a>
+      <a href="settings.html" class="menu-item">⚙ Settings</a>
+</div>
+
+</div>
+
+<div class="main">
+
+<div class="top">
+
+<div class="title">
+Calendar & Tasks
+</div>
+
+<div class="add-box">
+<input type="text" id="eventTitle" placeholder="Tên sự kiện">
+<input type="date" id="eventDate">
+<button onclick="addEvent()">+ Thêm</button>
+</div>
+
+</div>
+
+<div class="calendar-shell">
+<div id="calendar"></div>
+</div>
+
+<div class="task-panel">
+
+<h2>Today's Tasks</h2>
+
+<div class="task">
+<h4>Follow up Cosmos Summer Camp</h4>
+<p>Liên hệ mentor Singapore và confirm deadline.</p>
+</div>
+
+<div class="task">
+<h4>Check Student Resume</h4>
+<p>Review hồ sơ apply research program.</p>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
+
+<script>
+
+document.addEventListener('DOMContentLoaded', function() {
+
+  const calendarEl = document.getElementById('calendar');
+
+  const calendar = new FullCalendar.Calendar(calendarEl, {
+
+    initialView: 'dayGridMonth',
+
+    selectable:true,
+
+    editable:true,
+
+    events:[
+      {
+        title:'Enjoy AI Deadline',
+        start:'2026-06-20',
+        color:'#8b5cf6'
+      },
+
+      {
+        title:'Cosmos Camp',
+        start:'2026-07-12',
+        color:'#00f2fe'
+      }
+    ]
+  });
+
+  calendar.render();
+
+  window.addEvent = function(){
+
+    const title = document.getElementById('eventTitle').value;
+    const date = document.getElementById('eventDate').value;
+
+    if(title && date){
+
+      calendar.addEvent({
+        title:title,
+        start:date,
+        color:'#4facfe'
+      });
+
+      alert("Đã thêm sự kiện!");
+
+    }
+
+  }
+
+});
+
+</script>
+
+</body>
+</html>
